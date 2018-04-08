@@ -17,7 +17,6 @@ my $tempOutput = File::Temp->new();
 
 sub transformInput;
 sub buildJSONEntry;
-sub prependCommaForMultipleEntries;
 
 my $makeOutput = qx(make -n -B);
 
@@ -61,14 +60,4 @@ sub buildJSONEntry {
                "\n\"directory\": \"$directory\"," .
                "\n\"file\": \"$file\"\n}\n";
   return $entry;
-}
-
-sub prependCommaForMultipleEntries {
-  my $comma="";
-  state $counter=0;
-  if ( $counter gt 0 ) {
-    $comma = ",\n";
-  }
-  $counter = 1;
-  return $comma;
 }
