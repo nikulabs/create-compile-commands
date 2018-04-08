@@ -2,24 +2,18 @@
 # This script is written in perl for performance reasons, not for portability.
 # Requires several non-default perl modules, and an external tool, "jq".
 
-use feature 'state';
 use strict;
 use warnings;
 use Cwd 'realpath';
-use File::Copy;
 use File::Spec;
-use File::Tee qw(tee);
 use File::Temp qw(tempfile);
-
-our $KEEP_ALL=1;
-
-my $tempOutput = File::Temp->new();
 
 sub transformInput;
 sub buildJSONEntry;
 
-my $makeOutput = qx(make -n -B);
+my $tempOutput = File::Temp->new();
 
+my $makeOutput = qx(make -n -B);
 my $dirChangeRegex = "^make\[[0-9]+\]: Entering directory";
 my $compileCommandRegex = "g(\\+\\+|cc) -c";
 
