@@ -22,7 +22,7 @@ sub prependCommaForMultipleEntries;
 my $makeOutput = qx(make -n -B);
 
 my $dirChangeRegex = "^make\[[0-9]+\]: Entering directory";
-my $compileCommandRegex = "^g(\\+\\+|cc) -c";
+my $compileCommandRegex = "g(\\+\\+|cc) -c";
 
 my $currentDirectory;
 
@@ -46,6 +46,9 @@ sub transformInput {
   chomp($command);
   $command =~ tr/"//d;  #Don't fail if there aren't any quotes to remove
   $command =~ tr/\\//d; #Don't fail if there aren't any escapes to remove
+  my @removeEcho = split("&&", $command);
+  $command = $removeEcho[-1]; #Remove last in case there wasn't an echo
+  $command =~ s/\s+//;
   my $fileInCommand = ( split ' ', $command )[ -1 ] || die "Could not get file name $!";
   my $filePath = File::Spec->catfile( $directory, '/', $fileInCommand ) || die "Could not build file path $!";
   my $canonFile = realpath( $filePath ) || die "Could not get canonical path $!";
