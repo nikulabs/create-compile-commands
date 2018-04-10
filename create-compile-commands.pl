@@ -31,14 +31,14 @@ foreach my $line (split /[\r\n]+/, $makeOutput) {
 }
 
 $tempOutput->flush;
-print qx(jq --slurp "unique_by(.file)" $tempOutput ) || die "Unable to make entries unique";
+print qx(jq --slurp 'unique_by(.file) | [.[] | select(.file | contains("moc_") | not)]' $tempOutput ) || die "Unable to make entries unique";
 close $tempOutput;
 
 sub transformInput {
   my( $command, $directory ) = @_;
   chomp($command);
-  $command =~ tr/"//d;  #Don't fail if there aren't any quotes to remove
-  $command =~ tr/\\//d; #Don't fail if there aren't any escapes to remove
+  $command =~ tr/\\//d; #Remove escapes on thirdparty paths, why are these here?
+  $command =~ s/"/\\\\\\"/g;  #Add escapes to for defines that should be strings
   my @removeEcho = split("&&", $command);
   $command = $removeEcho[-1]; #Remove last in case there wasn't an echo
   $command =~ s/\s+//;
